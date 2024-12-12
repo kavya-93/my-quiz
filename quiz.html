@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+    <div class="hero">
+        <h1>Quiz time with Kavya</h1> <br><br>
+        <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+        <div id="quiz-content" style="display:none;">
+            <div class="question-box">
+                <div class="question" id="question"></div><br>
+                <button class="answer-btn" id="option1" onclick="checkAnswer(this)"></button>
+                <button class="answer-btn" id="option2" onclick="checkAnswer(this)"></button>
+                <button class="answer-btn" id="option3" onclick="checkAnswer(this)"></button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+        <div id="final-score" style="display:none;">
+            <p id="score-message"></p>
+            <button class="start-btn" onclick="restartQuiz()">Restart Quiz</button>
+            <div id="clap" class="clap">👏👏👏</div>
+            <audio id="clap-sound" src="applause-sound-effect-240470.mp3"></audio>
+        </div>
+    </div>
+    <script>
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const questions = [
+            { question: "What is the capital of France?", options: ["Paris", "London", "Berlin"], correctAnswer: "Paris" },
+            { question: "What is 2 + 2?", options: ["3", "4", "5"], correctAnswer: "4" },
+            { question: "What color is the sky?", options: ["Red", "Blue", "Green"], correctAnswer: "Blue" }
+        ];
+
+        function startQuiz() {
+            document.querySelector(".start-btn").style.display = "none";
+            document.getElementById("quiz-content").style.display = "block";
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = currentQuestion.question;
+            const buttons = document.querySelectorAll(".answer-btn");
+            buttons.forEach((button, index) => {
+                button.textContent = currentQuestion.options[index];
+                button.disabled = false;
+            });
+            document.getElementById("feedback").textContent = '';
+            
+            //condition to change button text on the last question
+            if(currentQuestionIndex == questions.length - 1) {
+                document.getElementById("next-btn").textContent = "Finish Quiz";
+            } else{document.getElementById("next-btn").textContent = "Next Question";
+                    
+                }
+                
+            document.getElementById("next-btn").disabled = true;
+            console.log(`Current Question: ${currentQuestion.question}`);
+        }
+
+        function checkAnswer(button) {
+            const selectedAnswer = button.textContent;
+            const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+            const feedback = document.getElementById("feedback");
+            console.log(`Selected Answer: ${selectedAnswer}`);
+            console.log(`Correct Answer: ${correctAnswer}`);
+            if (selectedAnswer === correctAnswer) {
+                feedback.textContent = "Correct!";
+                feedback.style.color = "green";
+                score++;
+            } else {
+                feedback.textContent = "Wrong Answer!";
+                feedback.style.color = "red";
+            }
+            document.querySelectorAll(".answer-btn").forEach(btn => btn.disabled = true);
+            document.getElementById("next-btn").disabled = false;
+            console.log(`Score: ${score}`);
+        }
+
+        function showFinalScore() {
+            document.getElementById("quiz-content").style.display = "none";
+            document.getElementById("final-score").style.display = "block";
+            document.getElementById("score-message").textContent = `You scored ${score} out of ${questions.length}!`;
+            console.log(`Final Score: ${score}`);
+            //show clap animation if score is 3 out of 3
+            if(score=== questions.length) {
+                document.getElementById("clap").style.display = "block";
+                document.getElementById("clap-sound").play();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            console.log("Moving to next question...");
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById("final-score").style.display = "none";
+            document.getElementById("quiz-content").style.display = "none";
+            document.querySelector(".start-btn").style.display = "inline-block";
+            console.log("Quiz restarted.");
+        }
+    </script>
+
+</body>
+</html> 
